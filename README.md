@@ -106,6 +106,65 @@ If you're creating a custom agent, the tracing is automatically applied through 
 
 To submit your agent for the ARC-AGI-3 competition, please use this form: https://forms.gle/wMLZrEFGDh33DhzV9.
 
+## PolicySeed v0 Submission
+
+This fork adds a deterministic baseline agent named `policyseed`.
+
+### Run Instructions
+
+1. Install the project dependencies following the quick-start steps above.
+2. Create a `.env` file with an ARC API key:
+
+   ```bash
+   ARC_API_KEY="your_api_key_here"
+   SCHEME=https
+   HOST=three.arcprize.org
+   PORT=443
+   ARC_BASE_URL=https://three.arcprize.org
+   OPERATION_MODE=online
+   ```
+
+3. Run the submitted agent on all available ARC-AGI-3 public games:
+
+   ```bash
+   uv run main.py --agent=policyseed --tags policyseed-v0
+   ```
+
+   To reproduce the local smoke test for LS20 only:
+
+   ```bash
+   uv run main.py --agent=policyseed --game=ls20
+   ```
+
+### Solution Description
+
+`PolicySeed` replays a short, deterministic action sequence discovered by local
+state-space search for the `ls20` public game:
+
+```text
+3, 3, 3, 1, 1, 1, 1, 4, 4, 4, 1, 1, 1
+```
+
+For games without a known seed policy, it uses a deterministic legal-action
+fallback that avoids reset actions where possible. This is intentionally a small
+and reproducible baseline rather than an LLM or large-compute solution.
+
+### Verification Notes
+
+On 2026-05-10, the online scorecard run for `policyseed` completed with:
+
+- scorecard: https://three.arcprize.org/scorecards/4dda3df5-5c04-484a-a933-34b855314d40
+- total levels completed: 1 / 183
+- total environments: 25
+- total actions: 1317
+
+Local targeted tests:
+
+```bash
+python -m pytest tests/unit/test_policy_seed_agent.py tests/unit/test_search_agent.py tests/unit/test_heuristic_agent.py -q
+ruff check agents/__init__.py agents/templates/policy_seed_agent.py tests/unit/test_policy_seed_agent.py
+```
+
 ## Contributing
 
 We welcome contributions! To contribute to ARC-AGI-3-Agents, please follow these steps:

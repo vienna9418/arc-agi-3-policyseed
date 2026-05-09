@@ -116,26 +116,44 @@ def main() -> None:
 
     print(f"{ROOT_URL}/api/games")
 
-    # Get the list of games from the API
+    # Get the list of games from the API.
+    # If running offline or the API is temporarily unreachable, Swarm/Arcade can
+    # still run local environments from ENVIRONMENTS_DIR, so fall back to local
+    # metadata.
     full_games = []
-    try:
-        with requests.Session() as session:
-            session.headers.update(HEADERS)
-            r = session.get(f"{ROOT_URL}/api/games", timeout=10)
+    if os.environ.get("OPERATION_MODE", "").lower() == "offline":
+        logger.info("OPERATION_MODE=offline; skipping API game list request")
+    else:
+        try:
+            with requests.Session() as session:
+                session.headers.update(HEADERS)
+                r = session.get(f"{ROOT_URL}/api/games", timeout=10)
 
-        if r.status_code == 200:
-            try:
-                full_games = [g["game_id"] for g in r.json()]
-            except (ValueError, KeyError) as e:
-                logger.error(f"Failed to parse games response: {e}")
-                logger.error(f"Response content: {r.text[:200]}")
-        else:
-            logger.error(
-                f"API request failed with status {r.status_code}: {r.text[:200]}"
+            if r.status_code == 200:
+                try:
+                    full_games = [g["game_id"] for g in r.json()]
+                except (ValueError, KeyError) as e:
+                    logger.error(f"Failed to parse games response: {e}")
+                    logger.error(f"Response content: {r.text[:200]}")
+            else:
+                logger.error(
+                    f"API request failed with status {r.status_code}: {r.text[:200]}"
+                )
+
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Failed to connect to API server: {e}")
+
+    if not full_games:
+        try:
+            from arc_agi import Arcade
+
+            local_arcade = Arcade()
+            full_games = [env.game_id for env in local_arcade.available_environments]
+            logger.info(
+                f"Using {len(full_games)} locally available games from ENVIRONMENTS_DIR"
             )
-
-    except requests.exceptions.RequestException as e:
-        logger.error(f"Failed to connect to API server: {e}")
+        except Exception as e:
+            logger.error(f"Failed to load local environments: {e}")
 
     # For playback agents, we can derive the game from the recording filename
     if not full_games and args.agent and args.agent.endswith(".recording.jsonl"):
