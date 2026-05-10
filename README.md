@@ -151,12 +151,20 @@ and reproducible baseline rather than an LLM or large-compute solution.
 
 ### Verification Notes
 
-On 2026-05-10, the online scorecard run for `policyseed` completed with:
+On 2026-05-10, the v0 online scorecard run for `policyseed` completed with:
 
 - scorecard: https://three.arcprize.org/scorecards/4dda3df5-5c04-484a-a933-34b855314d40
 - total levels completed: 1 / 183
 - total environments: 25
 - total actions: 1317
+
+The v1 run adds a deterministic `sc25` level-0 policy and avoids spending
+actions on games without a known seed policy:
+
+- scorecard: https://three.arcprize.org/scorecards/dc05a240-5812-4be7-a293-1f817efb7962
+- total levels completed: 2 / 183
+- total environments: 25
+- total actions: 30
 
 Local targeted tests:
 

@@ -3,11 +3,31 @@ from arcengine import FrameData, GameAction, GameState
 
 from agents.templates.policy_seed_agent import (
     PolicySeed,
+    format_policy_for_name,
     legal_non_reset_actions,
     policy_for_game,
 )
 
 LS20_POLICY = (3, 3, 3, 1, 1, 1, 1, 4, 4, 4, 1, 1, 1)
+SC25_POLICY = (
+    {"id": 6, "x": 30, "y": 50},
+    {"id": 6, "x": 30, "y": 50},
+    {"id": 6, "x": 25, "y": 55},
+    {"id": 6, "x": 35, "y": 55},
+    {"id": 6, "x": 30, "y": 60},
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+)
 
 
 def make_agent(game_id: str = "ls20-9607627b") -> PolicySeed:
@@ -23,6 +43,10 @@ def make_agent(game_id: str = "ls20-9607627b") -> PolicySeed:
 
 def test_policy_for_game_returns_ls20_sequence():
     assert policy_for_game("ls20-9607627b") == LS20_POLICY
+
+
+def test_policy_for_game_returns_sc25_sequence():
+    assert policy_for_game("sc25-635fd71a") == SC25_POLICY
 
 
 def test_policy_for_game_returns_empty_tuple_for_unknown_prefix():
@@ -47,7 +71,7 @@ def test_name_includes_game_id_policyseed_max_actions_and_policy():
     assert "ls20-9607627b" in agent.name
     assert "policyseed" in agent.name
     assert "80" in agent.name
-    assert str(LS20_POLICY) in agent.name
+    assert format_policy_for_name(LS20_POLICY) in agent.name
 
 
 def test_recording_init_uses_policyseed_name_with_max_actions_and_policy(
@@ -72,6 +96,25 @@ def test_recording_init_uses_policyseed_name_with_max_actions_and_policy(
     assert "80" in recorder_filename
     assert "policy" in recorder_filename
     assert recorder_filename.startswith(temp_recordings_dir.lower())
+
+
+def test_recording_name_for_complex_policy_avoids_windows_invalid_characters(
+    temp_recordings_dir,
+):
+    agent = PolicySeed(
+        card_id="test-card",
+        game_id="sc25-635fd71a",
+        agent_name="test-agent",
+        ROOT_URL="https://example.com",
+        record=True,
+        arc_env=None,
+    )
+
+    filename = agent.recorder.filename
+
+    assert filename.startswith(temp_recordings_dir)
+    assert not any(character in agent.name for character in '<>:"/\\|?*')
+    agent.recorder.record({"ok": True})
 
 
 def test_legal_non_reset_actions_falls_back_to_all_non_reset_when_absent():
@@ -243,6 +286,26 @@ def test_complex_action_data_includes_center_coordinates_and_game_id():
     assert action.reasoning
 
 
+def test_complex_policy_entry_uses_explicit_coordinates():
+    agent = make_agent()
+    agent.policy = ({"id": GameAction.ACTION6.value, "x": 25, "y": 50},)
+    frame = FrameData(
+        frame=[[[0 for _ in range(10)] for _ in range(8)]],
+        state=GameState.NOT_FINISHED,
+        available_actions=[GameAction.ACTION6.value],
+    )
+
+    action = agent.choose_action([frame], frame)
+    data = action.action_data.model_dump()
+
+    assert action is GameAction.ACTION6
+    assert data["game_id"] == "ls20-9607627b"
+    assert data["x"] == 25
+    assert data["y"] == 50
+    assert action.reasoning["x"] == 25
+    assert action.reasoning["y"] == 50
+
+
 @pytest.mark.parametrize(
     ("state", "expected"),
     [
@@ -275,13 +338,13 @@ def test_is_done_false_when_ls20_policy_not_exhausted_after_level_completed():
     assert agent.is_done([frame], frame) is False
 
 
-def test_is_done_false_for_unknown_policy_after_level_completed_unless_win():
+def test_is_done_true_for_unknown_policy_to_avoid_wasting_actions():
     agent = make_agent(game_id="unknown")
     agent.policy_index = 0
     unfinished_frame = FrameData(state=GameState.NOT_FINISHED, levels_completed=1)
     win_frame = FrameData(state=GameState.WIN, levels_completed=1)
 
-    assert agent.is_done([unfinished_frame], unfinished_frame) is False
+    assert agent.is_done([unfinished_frame], unfinished_frame) is True
     assert agent.is_done([win_frame], win_frame) is True
 
 

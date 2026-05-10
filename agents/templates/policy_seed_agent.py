@@ -1,17 +1,66 @@
-from typing import Any
+from typing import Any, TypeAlias
 
 from arcengine import FrameData, GameAction, GameState
 
 from ..agent import Agent
 
-POLICIES: dict[str, tuple[int, ...]] = {
+PolicyEntry: TypeAlias = int | dict[str, int]
+
+POLICIES: dict[str, tuple[PolicyEntry, ...]] = {
     "ls20": (3, 3, 3, 1, 1, 1, 1, 4, 4, 4, 1, 1, 1),
+    "sc25": (
+        {"id": 6, "x": 30, "y": 50},
+        {"id": 6, "x": 30, "y": 50},
+        {"id": 6, "x": 25, "y": 55},
+        {"id": 6, "x": 35, "y": 55},
+        {"id": 6, "x": 30, "y": 60},
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+    ),
 }
 
 
-def policy_for_game(game_id: str) -> tuple[int, ...]:
+def policy_for_game(game_id: str) -> tuple[PolicyEntry, ...]:
     """Return the seed policy matching the game id prefix before a hyphen."""
     return POLICIES.get(game_id.split("-", 1)[0], ())
+
+
+def action_from_policy_entry(entry: PolicyEntry) -> tuple[GameAction, dict[str, int]]:
+    """Convert a replay policy entry to an action and optional action data."""
+    if isinstance(entry, dict):
+        action = GameAction.from_id(int(entry["id"]))
+        data = {
+            key: int(entry[key])
+            for key in ("x", "y")
+            if key in entry
+        }
+        return action, data
+    return GameAction.from_id(int(entry)), {}
+
+
+def format_policy_for_name(policy: tuple[PolicyEntry, ...]) -> str:
+    """Return a compact filename-safe policy description."""
+    parts: list[str] = []
+    for entry in policy:
+        if isinstance(entry, dict):
+            action_id = int(entry["id"])
+            if "x" in entry and "y" in entry:
+                parts.append(f"a{action_id}x{int(entry['x'])}y{int(entry['y'])}")
+            else:
+                parts.append(f"a{action_id}")
+        else:
+            parts.append(f"a{int(entry)}")
+    return "-".join(parts)
 
 
 def legal_non_reset_actions(frame: FrameData) -> list[GameAction]:
@@ -48,15 +97,16 @@ class PolicySeed(Agent):
     @property
     def name(self) -> str:
         policy = getattr(self, "policy", policy_for_game(getattr(self, "game_id", "")))
-        return f"{super().name}.{self.MAX_ACTIONS}.policy{policy}"
+        return f"{super().name}.{self.MAX_ACTIONS}.policy-{format_policy_for_name(policy)}"
 
     def is_done(self, frames: list[FrameData], latest_frame: FrameData) -> bool:
         """Stop after a win or a completed level once seed policy replay is exhausted."""
         if latest_frame.state is GameState.WIN:
             return True
+        if not self.policy:
+            return True
         return (
-            bool(self.policy)
-            and self.policy_index >= len(self.policy)
+            self.policy_index >= len(self.policy)
             and latest_frame.levels_completed > 0
         )
 
@@ -80,8 +130,8 @@ class PolicySeed(Agent):
             policy_value = self.policy[self.policy_index]
             self.policy_index += 1
             try:
-                action = GameAction.from_id(policy_value)
-            except ValueError:
+                action, action_data = action_from_policy_entry(policy_value)
+            except (KeyError, TypeError, ValueError):
                 continue
             if legal_actions_unavailable or action in legal_actions:
                 return self._prepare_action(
@@ -91,6 +141,7 @@ class PolicySeed(Agent):
                         f"Following seed policy action {action.name} "
                         f"at position {self.policy_index}/{len(self.policy)}."
                     ),
+                    **action_data,
                 )
 
         if legal_actions:
@@ -115,16 +166,20 @@ class PolicySeed(Agent):
         action: GameAction,
         latest_frame: FrameData,
         reasoning: str,
+        x: int | None = None,
+        y: int | None = None,
     ) -> GameAction:
         if action.is_simple():
             action.set_data({"game_id": self.game_id})
             action.reasoning = reasoning
         elif action.is_complex():
+            action_x = self._center_coordinate(latest_frame, axis="x") if x is None else x
+            action_y = self._center_coordinate(latest_frame, axis="y") if y is None else y
             action.set_data(
                 {
                     "game_id": self.game_id,
-                    "x": self._center_coordinate(latest_frame, axis="x"),
-                    "y": self._center_coordinate(latest_frame, axis="y"),
+                    "x": action_x,
+                    "y": action_y,
                 }
             )
             action.reasoning = {
@@ -132,6 +187,8 @@ class PolicySeed(Agent):
                 "strategy": "policy_seed",
                 "reason": reasoning,
                 "game_id": self.game_id,
+                "x": action_x,
+                "y": action_y,
             }
 
         return action
