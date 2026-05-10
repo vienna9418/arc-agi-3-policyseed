@@ -70,6 +70,49 @@ POLICIES: dict[str, tuple[PolicyEntry, ...]] = {
         4,
         4,
         4,
+
+        {"id": 6, "x": 5, "y": 5},
+        {"id": 6, "x": 30, "y": 50},
+        {"id": 6, "x": 25, "y": 55},
+        {"id": 6, "x": 35, "y": 55},
+        {"id": 6, "x": 30, "y": 60},
+        {"id": 6, "x": 5, "y": 15},
+        {"id": 6, "x": 25, "y": 50},
+        {"id": 6, "x": 30, "y": 50},
+        {"id": 6, "x": 30, "y": 55},
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        1,
+        {"id": 6, "x": 5, "y": 5},
+        {"id": 6, "x": 30, "y": 50},
+        {"id": 6, "x": 25, "y": 55},
+        {"id": 6, "x": 35, "y": 55},
+        {"id": 6, "x": 30, "y": 60},
+        {"id": 6, "x": 5, "y": 25},
+        {"id": 6, "x": 30, "y": 50},
+        {"id": 6, "x": 30, "y": 55},
+        {"id": 6, "x": 30, "y": 60},
+        2,
+        2,
+        3,
+        {"id": 6, "x": 5, "y": 25},
+        {"id": 6, "x": 30, "y": 50},
+        {"id": 6, "x": 30, "y": 55},
+        {"id": 6, "x": 30, "y": 60},
+        {"id": 6, "x": 5, "y": 15},
+        {"id": 6, "x": 25, "y": 50},
+        {"id": 6, "x": 30, "y": 50},
+        {"id": 6, "x": 30, "y": 55},
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
     ),
 }
 
@@ -134,7 +177,7 @@ def legal_non_reset_actions(frame: FrameData) -> list[GameAction]:
 class PolicySeed(Agent):
     """Replay a known seed policy, then use deterministic legal fallback actions."""
 
-    MAX_ACTIONS = 80
+    MAX_ACTIONS = 140
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)

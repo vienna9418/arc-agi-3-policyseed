@@ -188,6 +188,14 @@ The v4 run extends `sc25` through its fourth solved level:
 - total environments: 25
 - total actions: 73
 
+The v5 run extends `sc25` through its fifth solved level and raises the
+policy replay action cap to cover the longer deterministic sequence:
+
+- scorecard: https://three.arcprize.org/scorecards/db25681e-db34-4d26-be53-66720b1e8e51
+- total levels completed: 6 / 183
+- total environments: 25
+- total actions: 115
+
 Local targeted tests:
 
 ```bash

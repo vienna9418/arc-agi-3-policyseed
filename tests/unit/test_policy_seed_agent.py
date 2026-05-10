@@ -70,6 +70,48 @@ SC25_POLICY = (
     4,
     4,
     4,
+    {"id": 6, "x": 5, "y": 5},
+    {"id": 6, "x": 30, "y": 50},
+    {"id": 6, "x": 25, "y": 55},
+    {"id": 6, "x": 35, "y": 55},
+    {"id": 6, "x": 30, "y": 60},
+    {"id": 6, "x": 5, "y": 15},
+    {"id": 6, "x": 25, "y": 50},
+    {"id": 6, "x": 30, "y": 50},
+    {"id": 6, "x": 30, "y": 55},
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    1,
+    {"id": 6, "x": 5, "y": 5},
+    {"id": 6, "x": 30, "y": 50},
+    {"id": 6, "x": 25, "y": 55},
+    {"id": 6, "x": 35, "y": 55},
+    {"id": 6, "x": 30, "y": 60},
+    {"id": 6, "x": 5, "y": 25},
+    {"id": 6, "x": 30, "y": 50},
+    {"id": 6, "x": 30, "y": 55},
+    {"id": 6, "x": 30, "y": 60},
+    2,
+    2,
+    3,
+    {"id": 6, "x": 5, "y": 25},
+    {"id": 6, "x": 30, "y": 50},
+    {"id": 6, "x": 30, "y": 55},
+    {"id": 6, "x": 30, "y": 60},
+    {"id": 6, "x": 5, "y": 15},
+    {"id": 6, "x": 25, "y": 50},
+    {"id": 6, "x": 30, "y": 50},
+    {"id": 6, "x": 30, "y": 55},
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
 )
 
 
@@ -96,8 +138,8 @@ def test_policy_for_game_returns_empty_tuple_for_unknown_prefix():
     assert policy_for_game("unknown") == ()
 
 
-def test_policyseed_max_actions_is_80():
-    assert PolicySeed.MAX_ACTIONS == 80
+def test_policyseed_max_actions_is_140():
+    assert PolicySeed.MAX_ACTIONS == 140
 
 
 def test_init_sets_policy_and_counters():
@@ -113,7 +155,7 @@ def test_name_includes_game_id_policyseed_max_actions_and_policy():
 
     assert "ls20-9607627b" in agent.name
     assert "policyseed" in agent.name
-    assert "80" in agent.name
+    assert "140" in agent.name
     assert format_policy_for_name(LS20_POLICY) in agent.name
 
 
@@ -133,10 +175,10 @@ def test_recording_init_uses_policyseed_name_with_max_actions_and_policy(
     recorder_filename = agent.recorder.filename.lower()
 
     assert "policyseed" in name
-    assert "80" in name
+    assert "140" in name
     assert "policy" in name
     assert "policyseed" in recorder_filename
-    assert "80" in recorder_filename
+    assert "140" in recorder_filename
     assert "policy" in recorder_filename
     assert recorder_filename.startswith(temp_recordings_dir.lower())
 
