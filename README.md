@@ -166,6 +166,14 @@ actions on games without a known seed policy:
 - total environments: 25
 - total actions: 30
 
+The v2 run extends the deterministic `sc25` replay through its second solved
+level and keeps unknown games at zero policy actions:
+
+- scorecard: https://three.arcprize.org/scorecards/64ea6217-337e-4013-a19d-473865212df6
+- total levels completed: 3 / 183
+- total environments: 25
+- total actions: 35
+
 Local targeted tests:
 
 ```bash

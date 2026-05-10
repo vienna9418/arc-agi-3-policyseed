@@ -27,6 +27,11 @@ SC25_POLICY = (
     3,
     3,
     3,
+    {"id": 6, "x": 25, "y": 50},
+    {"id": 6, "x": 30, "y": 50},
+    {"id": 6, "x": 30, "y": 55},
+    1,
+    1,
 )
 
 
@@ -114,6 +119,7 @@ def test_recording_name_for_complex_policy_avoids_windows_invalid_characters(
 
     assert filename.startswith(temp_recordings_dir)
     assert not any(character in agent.name for character in '<>:"/\\|?*')
+    assert len(filename) < 240
     agent.recorder.record({"ok": True})
 
 

@@ -1,3 +1,4 @@
+import hashlib
 from typing import Any, TypeAlias
 
 from arcengine import FrameData, GameAction, GameState
@@ -26,6 +27,11 @@ POLICIES: dict[str, tuple[PolicyEntry, ...]] = {
         3,
         3,
         3,
+        {"id": 6, "x": 25, "y": 50},
+        {"id": 6, "x": 30, "y": 50},
+        {"id": 6, "x": 30, "y": 55},
+        1,
+        1,
     ),
 }
 
@@ -60,7 +66,11 @@ def format_policy_for_name(policy: tuple[PolicyEntry, ...]) -> str:
                 parts.append(f"a{action_id}")
         else:
             parts.append(f"a{int(entry)}")
-    return "-".join(parts)
+    text = "-".join(parts)
+    if len(text) <= 80:
+        return text
+    digest = hashlib.sha1(text.encode("utf-8")).hexdigest()[:12]
+    return f"{len(policy)}steps-{digest}"
 
 
 def legal_non_reset_actions(frame: FrameData) -> list[GameAction]:
