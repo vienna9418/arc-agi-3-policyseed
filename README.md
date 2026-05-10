@@ -174,6 +174,13 @@ level and keeps unknown games at zero policy actions:
 - total environments: 25
 - total actions: 35
 
+The v3 run extends `sc25` through its third solved level:
+
+- scorecard: https://three.arcprize.org/scorecards/e35e46cf-576d-4db3-ab8d-1b91248bbd03
+- total levels completed: 4 / 183
+- total environments: 25
+- total actions: 46
+
 Local targeted tests:
 
 ```bash
