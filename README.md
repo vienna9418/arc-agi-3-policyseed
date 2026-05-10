@@ -181,6 +181,13 @@ The v3 run extends `sc25` through its third solved level:
 - total environments: 25
 - total actions: 46
 
+The v4 run extends `sc25` through its fourth solved level:
+
+- scorecard: https://three.arcprize.org/scorecards/7eb7a0bf-945f-41c6-9d87-df42eb28d3d1
+- total levels completed: 5 / 183
+- total environments: 25
+- total actions: 73
+
 Local targeted tests:
 
 ```bash
