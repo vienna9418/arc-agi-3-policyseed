@@ -211,6 +211,14 @@ The v7 run adds a four-action deterministic `sp80` level-0 policy:
 - total environments: 25
 - total actions: 163
 
+The v8 run adds a deterministic `tr87` policy that completes all six public
+`tr87` levels:
+
+- scorecard: https://three.arcprize.org/scorecards/17fa586d-e2f9-4260-a538-b931a60c6265
+- total levels completed: 14 / 183
+- total environments: 25
+- total actions: 290
+
 Local targeted tests:
 
 ```bash
