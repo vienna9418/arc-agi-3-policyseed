@@ -196,6 +196,14 @@ policy replay action cap to cover the longer deterministic sequence:
 - total environments: 25
 - total actions: 115
 
+The v6 run completes all six public `sc25` levels with a deterministic replay
+and keeps the `ls20` seed solution:
+
+- scorecard: https://three.arcprize.org/scorecards/f0e09f7c-ae83-4a71-870a-e2e599ab48aa
+- total levels completed: 7 / 183
+- total environments: 25
+- total actions: 159
+
 Local targeted tests:
 
 ```bash

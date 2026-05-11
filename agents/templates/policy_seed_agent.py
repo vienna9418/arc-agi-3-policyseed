@@ -70,7 +70,6 @@ POLICIES: dict[str, tuple[PolicyEntry, ...]] = {
         4,
         4,
         4,
-
         {"id": 6, "x": 5, "y": 5},
         {"id": 6, "x": 30, "y": 50},
         {"id": 6, "x": 25, "y": 55},
@@ -108,6 +107,50 @@ POLICIES: dict[str, tuple[PolicyEntry, ...]] = {
         {"id": 6, "x": 30, "y": 50},
         {"id": 6, "x": 30, "y": 55},
         1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        {"id": 6, "x": 5, "y": 5},
+        {"id": 6, "x": 30, "y": 50},
+        {"id": 6, "x": 25, "y": 55},
+        {"id": 6, "x": 35, "y": 55},
+        {"id": 6, "x": 30, "y": 60},
+        {"id": 6, "x": 5, "y": 15},
+        {"id": 6, "x": 25, "y": 50},
+        {"id": 6, "x": 30, "y": 50},
+        {"id": 6, "x": 30, "y": 55},
+        4,
+        4,
+        1,
+        {"id": 6, "x": 5, "y": 25},
+        {"id": 6, "x": 30, "y": 50},
+        {"id": 6, "x": 30, "y": 55},
+        {"id": 6, "x": 30, "y": 60},
+        1,
+        {"id": 6, "x": 5, "y": 5},
+        {"id": 6, "x": 30, "y": 50},
+        {"id": 6, "x": 25, "y": 55},
+        {"id": 6, "x": 35, "y": 55},
+        {"id": 6, "x": 30, "y": 60},
+        {"id": 6, "x": 5, "y": 15},
+        {"id": 6, "x": 25, "y": 50},
+        {"id": 6, "x": 30, "y": 50},
+        {"id": 6, "x": 30, "y": 55},
+        3,
+        3,
+        3,
+        {"id": 6, "x": 5, "y": 25},
+        {"id": 6, "x": 30, "y": 50},
+        {"id": 6, "x": 30, "y": 55},
+        {"id": 6, "x": 30, "y": 60},
+        {"id": 6, "x": 5, "y": 15},
+        {"id": 6, "x": 25, "y": 50},
+        {"id": 6, "x": 30, "y": 50},
+        {"id": 6, "x": 30, "y": 55},
+        1,
+        4,
         1,
         1,
         1,
@@ -126,11 +169,7 @@ def action_from_policy_entry(entry: PolicyEntry) -> tuple[GameAction, dict[str, 
     """Convert a replay policy entry to an action and optional action data."""
     if isinstance(entry, dict):
         action = GameAction.from_id(int(entry["id"]))
-        data = {
-            key: int(entry[key])
-            for key in ("x", "y")
-            if key in entry
-        }
+        data = {key: int(entry[key]) for key in ("x", "y") if key in entry}
         return action, data
     return GameAction.from_id(int(entry)), {}
 
@@ -177,7 +216,7 @@ def legal_non_reset_actions(frame: FrameData) -> list[GameAction]:
 class PolicySeed(Agent):
     """Replay a known seed policy, then use deterministic legal fallback actions."""
 
-    MAX_ACTIONS = 140
+    MAX_ACTIONS = 180
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
@@ -188,7 +227,9 @@ class PolicySeed(Agent):
     @property
     def name(self) -> str:
         policy = getattr(self, "policy", policy_for_game(getattr(self, "game_id", "")))
-        return f"{super().name}.{self.MAX_ACTIONS}.policy-{format_policy_for_name(policy)}"
+        return (
+            f"{super().name}.{self.MAX_ACTIONS}.policy-{format_policy_for_name(policy)}"
+        )
 
     def is_done(self, frames: list[FrameData], latest_frame: FrameData) -> bool:
         """Stop after a win or a completed level once seed policy replay is exhausted."""
@@ -197,8 +238,7 @@ class PolicySeed(Agent):
         if not self.policy:
             return True
         return (
-            self.policy_index >= len(self.policy)
-            and latest_frame.levels_completed > 0
+            self.policy_index >= len(self.policy) and latest_frame.levels_completed > 0
         )
 
     def choose_action(
@@ -264,8 +304,12 @@ class PolicySeed(Agent):
             action.set_data({"game_id": self.game_id})
             action.reasoning = reasoning
         elif action.is_complex():
-            action_x = self._center_coordinate(latest_frame, axis="x") if x is None else x
-            action_y = self._center_coordinate(latest_frame, axis="y") if y is None else y
+            action_x = (
+                self._center_coordinate(latest_frame, axis="x") if x is None else x
+            )
+            action_y = (
+                self._center_coordinate(latest_frame, axis="y") if y is None else y
+            )
             action.set_data(
                 {
                     "game_id": self.game_id,
