@@ -235,6 +235,15 @@ public `re86` levels:
 - total environments completed: 3 / 25
 - total actions: 625
 
+The v11 run extends the deterministic `re86` policy through its fifth public
+level and raises the replay cap to 280 actions:
+
+- scorecard: https://three.arcprize.org/scorecards/a29dfc39-0b61-461b-8415-12e42422b91c
+- total levels completed: 28 / 183
+- total environments: 25
+- total environments completed: 3 / 25
+- total actions: 719
+
 Local targeted tests:
 
 ```bash
