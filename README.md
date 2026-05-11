@@ -138,12 +138,10 @@ This fork adds a deterministic baseline agent named `policyseed`.
 
 ### Solution Description
 
-`PolicySeed` replays a short, deterministic action sequence discovered by local
-state-space search for the `ls20` public game:
-
-```text
-3, 3, 3, 1, 1, 1, 1, 4, 4, 4, 1, 1, 1
-```
+`PolicySeed` replays deterministic action sequences discovered by local
+state-space search and rule inspection for the known public games `ls20`,
+`sp80`, `sc25`, `tr87`, and `tu93`. The `tu93` sequence completes all nine
+public levels and raises the replay cap to 220 actions.
 
 For games without a known seed policy, it uses a deterministic legal-action
 fallback that avoids reset actions where possible. This is intentionally a small
@@ -218,6 +216,15 @@ The v8 run adds a deterministic `tr87` policy that completes all six public
 - total levels completed: 14 / 183
 - total environments: 25
 - total actions: 290
+
+The v9 run adds a deterministic `tu93` policy that completes all nine public
+`tu93` levels:
+
+- scorecard: https://three.arcprize.org/scorecards/d4e01aac-9c8a-40a8-89a8-d442e2babab3
+- total levels completed: 23 / 183
+- total environments: 25
+- total environments completed: 3 / 25
+- total actions: 475
 
 Local targeted tests:
 
