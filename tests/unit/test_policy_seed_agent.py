@@ -9,6 +9,7 @@ from agents.templates.policy_seed_agent import (
 )
 
 LS20_POLICY = (3, 3, 3, 1, 1, 1, 1, 4, 4, 4, 1, 1, 1)
+SP80_POLICY = (4, 4, 4, 5)
 SC25_POLICY = (
     {"id": 6, "x": 30, "y": 50},
     {"id": 6, "x": 30, "y": 50},
@@ -176,6 +177,10 @@ def test_policy_for_game_returns_ls20_sequence():
 
 def test_policy_for_game_returns_sc25_sequence():
     assert policy_for_game("sc25-635fd71a") == SC25_POLICY
+
+
+def test_policy_for_game_returns_sp80_sequence():
+    assert policy_for_game("sp80-589a99af") == SP80_POLICY
 
 
 def test_policy_for_game_returns_empty_tuple_for_unknown_prefix():

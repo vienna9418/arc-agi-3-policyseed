@@ -9,6 +9,7 @@ PolicyEntry: TypeAlias = int | dict[str, int]
 
 POLICIES: dict[str, tuple[PolicyEntry, ...]] = {
     "ls20": (3, 3, 3, 1, 1, 1, 1, 4, 4, 4, 1, 1, 1),
+    "sp80": (4, 4, 4, 5),
     "sc25": (
         {"id": 6, "x": 30, "y": 50},
         {"id": 6, "x": 30, "y": 50},

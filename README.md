@@ -204,6 +204,13 @@ and keeps the `ls20` seed solution:
 - total environments: 25
 - total actions: 159
 
+The v7 run adds a four-action deterministic `sp80` level-0 policy:
+
+- scorecard: https://three.arcprize.org/scorecards/34fd896a-e8ce-424f-9864-d1c2f107dc99
+- total levels completed: 8 / 183
+- total environments: 25
+- total actions: 163
+
 Local targeted tests:
 
 ```bash
